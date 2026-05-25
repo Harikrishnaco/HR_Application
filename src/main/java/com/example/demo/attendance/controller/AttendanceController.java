@@ -1,15 +1,24 @@
-package com.example.demo.attendance.controller;
+package com.example.demo.attendance;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/attendance")
 public class AttendanceController {
 
-    @GetMapping("/status")
-    public String getSystemStatus() {
-        return "Core Attendance System Modules are active and synced with Supabase!";
+    private final AttendanceService attendanceService;
+
+    public AttendanceController(AttendanceService attendanceService) {
+        this.attendanceService = attendanceService;
+    }
+
+    @PostMapping("/clock-in")
+    public AttendanceLog workerClockIn(@RequestParam Long workerId, @RequestParam Long siteId) {
+        return attendanceService.clockIn(workerId, siteId);
+    }
+
+    @PostMapping("/clock-out/{logId}")
+    public AttendanceLog workerClockOut(@PathVariable Long logId) {
+        return attendanceService.clockOut(logId);
     }
 }

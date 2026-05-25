@@ -1,0 +1,5 @@
+### Test Worker Clock-In
+POST http://localhost:8081/api/v1/attendance/clock-in?workerId=1&siteId=1
+
+### Test Worker Clock-Out (Replace 1 with the actual log ID returned from Clock-In)
+POST http://localhost:8081/api/v1/attendance/clock-out/1

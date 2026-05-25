@@ -3,12 +3,18 @@ package com.example.demo.attendance.controller;
 import com.example.demo.attendance.AttendanceService;
 import com.example.demo.attendance.AttendanceLog;
 import com.example.demo.attendance.AttendanceRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.Map;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/attendance") // Updated path to match the assignment specification exactly
+@RequestMapping("/api")
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
@@ -17,34 +23,41 @@ public class AttendanceController {
         this.attendanceService = attendanceService;
     }
 
-    // 1. Refactored Clock-In using JSON RequestBody
-    @PostMapping("/clock-in")
-    public AttendanceLog workerClockIn(@RequestBody AttendanceRequest request) {
-        return attendanceService.clockIn(request.getWorkerId(), request.getSiteId());
+    @PostMapping("/attendance/clock-in")
+    public ResponseEntity<AttendanceLog> workerClockIn(@RequestBody AttendanceRequest request) {
+        return ResponseEntity.ok(attendanceService.clockIn(request.getWorkerId(), request.getSiteId()));
     }
 
-    // 2. Refactored Clock-Out using JSON RequestBody (Automated shift matching)
-    @PostMapping("/clock-out")
-    public AttendanceLog workerClockOut(@RequestBody AttendanceRequest request) {
-        return attendanceService.clockOut(request.getWorkerId());
+    @PostMapping("/attendance/clock-out")
+    public ResponseEntity<AttendanceLog> workerClockOut(@RequestBody AttendanceRequest request) {
+        return ResponseEntity.ok(attendanceService.clockOut(request.getWorkerId()));
     }
 
-    // 3. Payroll Calculation Endpoint
-    @GetMapping("/payroll/{workerId}")
-    public Map<String, Object> getWorkerPayroll(@PathVariable Long workerId) {
-        return attendanceService.calculatePendingPayroll(workerId);
+    @GetMapping("/attendance/active")
+    public ResponseEntity<List<Object>> getActiveWorkers() {
+        return ResponseEntity.ok(attendanceService.getAllActiveWorkers());
     }
 
-    // 4. Overtime Settlement Endpoint
-    @PutMapping("/settle/{workerId}")
-    public String settlePayroll(@PathVariable Long workerId) {
-        attendanceService.settleWorkerOvertime(workerId);
-        return "All pending overtime entries for worker ID " + workerId + " have been successfully settled.";
+    @GetMapping("/attendance/log")
+    public ResponseEntity<Page<AttendanceLog>> getWorkerHistoryLogs(
+            @RequestParam Long workerId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok(attendanceService.getWorkerHistory(workerId, from, to, page, size));
     }
 
-    // 5. Flagged Anomalies Security Report
-    @GetMapping("/reports/flagged")
-    public List<AttendanceLog> getFlaggedReports() {
-        return attendanceService.getFlaggedShifts();
+    @PostMapping("/overtime/settle/{workerId}")
+    public ResponseEntity<Map<String, Object>> settleMonthlyOvertimeRoute(
+            @PathVariable Long workerId,
+            @RequestParam String month) {
+        BigDecimal totalPayout = attendanceService.settleMonthlyOvertime(workerId, month);
+        return ResponseEntity.ok(Map.of(
+                "status", "SETTLED",
+                "workerId", workerId,
+                "monthProcessed", month,
+                "totalPayoutSettledAmount", totalPayout
+        ));
     }
 }

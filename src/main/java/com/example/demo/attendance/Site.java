@@ -24,4 +24,21 @@ public class Site {
 
     @Column(name = "active_status", nullable = false, columnDefinition = "boolean default true")
     private Boolean activeStatus = true;
+
+    // 1. Add the field with a default of true
+    @Column(name = "is_active", nullable = false, columnDefinition = "boolean default true")
+    private boolean active = true;
+
+    // 2. Add the getter method
+    public boolean isActive() {
+        return active;
+    }
+
+    // 3. Add the setter method
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+    public String getSiteName() {
+        return this.siteName;
+    }
 }

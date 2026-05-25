@@ -57,4 +57,19 @@ public class Worker {
 
     public Boolean getActiveStatus() { return activeStatus; }
     public void setActiveStatus(Boolean activeStatus) { this.activeStatus = activeStatus; }
+
+
+    // 1. Add the field with a default of true
+    @Column(name = "is_active", nullable = false, columnDefinition = "boolean default true")
+    private boolean active = true;
+
+    // 2. Add the getter method (this is what AttendanceService is looking for)
+    public boolean isActive() {
+        return active;
+    }
+
+    // 3. Add the setter method
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }

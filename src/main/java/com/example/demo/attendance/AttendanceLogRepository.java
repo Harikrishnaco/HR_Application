@@ -10,4 +10,6 @@ public interface AttendanceLogRepository extends JpaRepository<AttendanceLog, Lo
 
     // Add this to find suspicious shifts
     List<AttendanceLog> findByIsFlagged(Boolean isFlagged);
+
+    java.util.Optional<AttendanceLog> findByWorkerIdAndClockOutTimestampIsNull(Long workerId);
 }

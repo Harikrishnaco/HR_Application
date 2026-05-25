@@ -4,7 +4,9 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "attendance_logs")
+@Table(name = "attendance_logs", indexes = {
+        @Index(name = "idx_worker_date", columnList = "worker_id, clock_in_timestamp")
+})
 public class AttendanceLog {
 
     @Id
@@ -19,7 +21,7 @@ public class AttendanceLog {
     @JoinColumn(name = "site_id", nullable = false)
     private Site site;
 
-    @Column(name = "clock_in_timestamp")
+    @Column(name = "clock_in_timestamp", nullable = false)
     private LocalDateTime clockInTimestamp;
 
     @Column(name = "clock_out_timestamp")
@@ -34,22 +36,17 @@ public class AttendanceLog {
     @Column(name = "is_flagged", nullable = false, columnDefinition = "boolean default false")
     private Boolean isFlagged = false;
 
-    // --- MANUALLY GENERATED CONSTRUCTORS ---
+    // --- CONSTRUCTORS ---
     public AttendanceLog() {}
 
-    public AttendanceLog(Long id, Worker worker, Site site, LocalDateTime clockInTimestamp,
-                         LocalDateTime clockOutTimestamp, Double totalHours, Double overtimeHours, Boolean isFlagged) {
-        this.id = id;
+    public AttendanceLog(Worker worker, Site site, LocalDateTime clockInTimestamp) {
         this.worker = worker;
         this.site = site;
         this.clockInTimestamp = clockInTimestamp;
-        this.clockOutTimestamp = clockOutTimestamp;
-        this.totalHours = totalHours;
-        this.overtimeHours = overtimeHours;
-        this.isFlagged = isFlagged;
+        this.isFlagged = false;
     }
 
-    // --- MANUALLY GENERATED GETTERS AND SETTERS ---
+    // --- GETTERS AND SETTERS ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -71,6 +68,6 @@ public class AttendanceLog {
     public Double getOvertimeHours() { return overtimeHours; }
     public void setOvertimeHours(Double overtimeHours) { this.overtimeHours = overtimeHours; }
 
-    public Boolean getFlagged() { return isFlagged; }
-    public void setFlagged(Boolean flagged) { isFlagged = flagged; }
+    public Boolean getIsFlagged() { return isFlagged; }
+    public void setIsFlagged(Boolean flagged) { isFlagged = flagged; }
 }

@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/attendance")
+@CrossOrigin(originPatterns = "*", allowCredentials = "true") // 🔥 ALLOWS YOUR FRONTEND TO CONNECT SMOOTHLY WITHOUT BROWSER SECURITY BLOCKS
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
@@ -23,22 +24,22 @@ public class AttendanceController {
         this.attendanceService = attendanceService;
     }
 
-    @PostMapping("/attendance/clock-in")
+    @PostMapping("/clock-in")
     public ResponseEntity<AttendanceLog> workerClockIn(@RequestBody AttendanceRequest request) {
         return ResponseEntity.ok(attendanceService.clockIn(request.getWorkerId(), request.getSiteId()));
     }
 
-    @PostMapping("/attendance/clock-out")
+    @PostMapping("/clock-out")
     public ResponseEntity<AttendanceLog> workerClockOut(@RequestBody AttendanceRequest request) {
         return ResponseEntity.ok(attendanceService.clockOut(request.getWorkerId()));
     }
 
-    @GetMapping("/attendance/active")
+    @GetMapping("/active")
     public ResponseEntity<List<Object>> getActiveWorkers() {
         return ResponseEntity.ok(attendanceService.getAllActiveWorkers());
     }
 
-    @GetMapping("/attendance/log")
+    @GetMapping("/log")
     public ResponseEntity<Page<AttendanceLog>> getWorkerHistoryLogs(
             @RequestParam Long workerId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,

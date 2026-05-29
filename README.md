@@ -40,7 +40,7 @@ To prevent API keys from being leaked to public source control, the system pulls
 2. Inject the following environment variable key-value pair to map your secure Upstash HTTP Rest endpoint wrapper:
 
    * **Variable Name:**`MY_REDIS_SECRET_TOKEN`
-   * **Value:**`gQAAAAAAAhNlAAIgcDE5M2IxYjcxZWMxZGE0YTk5YWQ0N2UzNWY2MGJhY2Y2OQ`
+   * **Value:**``
 3. Your local `application.properties` will automatically ingest this token natively without revealing it in plaintext code:
    **Properties**
 
